@@ -1,0 +1,4 @@
+# serializer version: 1
+# name: test_ncp_to_pt5
+  Pt5File(commands=[Pt5Command(type=<Pt5CommandType.MOVE: 'G01'>, arguments={'X': -1000}), Pt5Command(type=<Pt5CommandType.MOVE: 'G01'>, arguments={'Y': -5000}), Pt5Command(type=<Pt5CommandType.CLOCKWISE_CIRCLE: 'G02'>, arguments={'X': -3000, 'Y': 3700, 'J': -2200}), Pt5Command(type=<Pt5CommandType.MOVE: 'G01'>, arguments={'X': -1000, 'Y': -700}), Pt5Command(type=<Pt5CommandType.COUNTER_CLOCKWISE_CIRCLE: 'G03'>, arguments={'X': 4000, 'Y': 2000, 'I': 1000, 'J': 3000}), Pt5Command(type=<Pt5CommandType.STOP_AND_REWIND: 'M30'>, arguments={})])
+# ---
