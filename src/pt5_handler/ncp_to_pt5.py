@@ -96,6 +96,10 @@ def ncp_to_pt5(model: NcpFile) -> Pt5File:
             commands.append(Pt5Command(type=Pt5CommandType.END))
         elif command.type == NcpCommandType.STOP_AND_REWIND:
             commands.append(Pt5Command(type=Pt5CommandType.STOP_AND_REWIND))
+        elif command.type == NcpCommandType.SET_INCREMENTAL_MODE:
+            is_absolute = False
+        elif command.type == NcpCommandType.SET_ABSOLUTE_MODE:
+            is_absolute = True
         else:
             # TODO error handling
             pass
