@@ -1,5 +1,5 @@
-from pt5_handler.ncp_model import NcpFile
-from pt5_handler.ncp_to_pt5 import ncp_to_pt5
+from pt5_core.ncp_model import NcpFile
+from pt5_core.ncp_to_pt5 import ncp_to_pt5
 
 
 def test_ncp_to_pt5_1(simple_ncp, snapshot):

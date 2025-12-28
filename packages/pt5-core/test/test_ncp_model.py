@@ -1,4 +1,4 @@
-from pt5_handler.ncp_model import NcpFile
+from pt5_core.ncp_model import NcpFile
 
 
 def test_ncp_to_model_1(simple_ncp, snapshot):

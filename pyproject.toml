@@ -15,4 +15,10 @@ dev = [
 ]
 
 [tool.uv.workspace]
-members = ["packages/*"]
+members = [
+    "packages/*",
+]
+
+[tool.uv.sources]
+pt5-core = { workspace = true }
+pt5-gui = { workspace = true }

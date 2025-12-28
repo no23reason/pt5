@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 members = [
     "pt5",
     "pt5-core",
+    "pt5-gui",
 ]
 
 [[package]]
@@ -68,7 +69,7 @@ dev = [
 [[package]]
 name = "pt5-core"
 version = "0.1.0"
-source = { virtual = "packages/pt5-core" }
+source = { editable = "packages/pt5-core" }
 
 [package.dev-dependencies]
 dev = [
@@ -85,6 +86,17 @@ dev = [
     { name = "ruff", specifier = ">=0.14.10" },
     { name = "syrupy", specifier = ">=5.0.0" },
 ]
+
+[[package]]
+name = "pt5-gui"
+version = "0.1.0"
+source = { editable = "packages/pt5-gui" }
+dependencies = [
+    { name = "pt5-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pt5-core", editable = "packages/pt5-core" }]
 
 [[package]]
 name = "pygments"

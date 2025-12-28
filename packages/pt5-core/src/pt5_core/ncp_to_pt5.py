@@ -1,5 +1,5 @@
-from pt5_handler.ncp_model import NcpFile, NcpCommandType
-from pt5_handler.pt5_model import Pt5File, Pt5Command, Pt5CommandType
+from pt5_core.ncp_model import NcpFile, NcpCommandType
+from pt5_core.pt5_model import Pt5File, Pt5Command, Pt5CommandType
 
 
 def _safe_add(a: float, b: float) -> float:
