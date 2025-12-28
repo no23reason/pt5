@@ -1,8 +1,7 @@
 [project]
-name = "pt5"
+name = "pt5-core"
 version = "0.1.0"
-description = "Set of functions related to the PT5 G Code dialect"
-readme = "README.md"
+description = "Core functionality related to the PT5 G Code dialect"
 license = "MIT"
 requires-python = ">=3.13"
 dependencies = []
@@ -14,5 +13,7 @@ dev = [
     "syrupy>=5.0.0",
 ]
 
-[tool.uv.workspace]
-members = ["packages/*"]
+[tool.pytest]
+minversion = "9.0"
+pythonpath = ["test", "src"]
+testpaths = ["test"]
