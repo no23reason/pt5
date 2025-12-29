@@ -14,6 +14,35 @@ dev = [
     "syrupy>=5.0.0",
 ]
 
+[tool.ruff]
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+]
+line-length = 120
+lint.select = [
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "I", # isort
+    "PERF", # perflint
+    "PIE",
+    "PLR0402", # prevent unnecessary manual import aliases
+    "PLR1711", # prevent useless returns
+    "SIM",
+    "UP",
+    "W", # pycodestyle warnings
+    "D417", # undocumented-param
+]
+lint.ignore = [
+    # rules recommended to be ignored when using ruff format
+    "E501",
+    "W191",
+    # ignore the rule, because it presents non-zero perf cost
+    "SIM105",
+]
+target-version = "py313"
+
 [tool.uv.workspace]
 members = [
     "packages/*",

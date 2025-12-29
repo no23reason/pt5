@@ -11,3 +11,15 @@ test:
 .PHONY: gui
 gui:
 	uv run --package pt5-gui packages/pt5-gui/src/pt5_gui/main.py
+
+.PHONY: lint
+lint:
+	uv run ruff check
+
+.PHONY: lint-fix
+lint-fix:
+	uv run ruff check --fix
+
+.PHONY: format
+format:
+	uv run ruff format

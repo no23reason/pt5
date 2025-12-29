@@ -1,5 +1,5 @@
-from pt5_core.ncp_model import NcpFile, NcpCommandType
-from pt5_core.pt5_model import Pt5File, Pt5Command, Pt5CommandType
+from pt5_core.ncp_model import NcpCommandType, NcpFile
+from pt5_core.pt5_model import Pt5Command, Pt5CommandType, Pt5File
 
 
 def _safe_add(a: float, b: float) -> float:
@@ -42,10 +42,7 @@ def ncp_to_pt5(model: NcpFile) -> Pt5File:
 
             last_x = new_x
             last_y = new_y
-        elif (
-            command.type == NcpCommandType.CLOCKWISE_CIRCLE
-            or command.type == NcpCommandType.COUNTER_CLOCKWISE_CIRCLE
-        ):
+        elif command.type == NcpCommandType.CLOCKWISE_CIRCLE or command.type == NcpCommandType.COUNTER_CLOCKWISE_CIRCLE:
             if is_absolute:
                 new_x = command.arguments.get("X", last_x)
                 new_y = command.arguments.get("Y", last_y)
