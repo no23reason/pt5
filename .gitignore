@@ -1,6 +1,16 @@
-.DS_Store
 .idea
 .vscode
-.pytest_cache
+.cursor
 .env
+.env.test
 .venv
+.DS_Store
+.vscode
+.ruff_cache
+
+# Python build artifacts
+*.egg-info
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
