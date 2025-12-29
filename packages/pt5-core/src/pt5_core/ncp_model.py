@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Generator
+from collections.abc import Generator, Iterable
 from dataclasses import dataclass, field
 from enum import StrEnum
 
@@ -29,9 +29,7 @@ class NcpFile:
         return _parse_ncp(raw_lines)
 
 
-def _parse_line(
-    raw_line: str, current_command_type: str | None
-) -> Generator[NcpCommand]:
+def _parse_line(raw_line: str, current_command_type: str | None) -> Generator[NcpCommand]:
     """
     Parse a single line of NCP.
     One line can have multiple commands.

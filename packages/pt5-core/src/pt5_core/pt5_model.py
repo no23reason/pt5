@@ -16,7 +16,7 @@ def _serialize_argument(name: str, micrometers: int) -> str:
         return ""
 
     sign = "+" if micrometers > 0 else "-"
-    return f"{name}{sign}{abs(micrometers) * 1000}"
+    return f"{name}{sign}{abs(micrometers)}"
 
 
 class Pt5CommandType(StrEnum):
@@ -49,7 +49,7 @@ def _serialize_pt5(model: Pt5File) -> Generator[str]:
     for command in model.commands:
         if command.type == Pt5CommandType.MOVE:
             if last_line:
-                yield last_line
+                yield last_line + "\n"
             last_line = " ".join(
                 filter(
                     None,
@@ -66,7 +66,7 @@ def _serialize_pt5(model: Pt5File) -> Generator[str]:
             line_number += 1
         elif command.type == Pt5CommandType.CLOCKWISE_CIRCLE:
             if last_line:
-                yield last_line
+                yield last_line + "\n"
             last_line = " ".join(
                 filter(
                     None,
@@ -85,7 +85,7 @@ def _serialize_pt5(model: Pt5File) -> Generator[str]:
             line_number += 1
         elif command.type == Pt5CommandType.COUNTER_CLOCKWISE_CIRCLE:
             if last_line:
-                yield last_line
+                yield last_line + "\n"
             last_line = " ".join(
                 filter(
                     None,
@@ -110,4 +110,4 @@ def _serialize_pt5(model: Pt5File) -> Generator[str]:
             last_line += " " + Pt5CommandType.STOP_AND_REWIND
 
     if last_line:
-        yield last_line
+        yield last_line + "\n"

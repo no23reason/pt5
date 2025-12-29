@@ -1,0 +1,7 @@
+[project]
+name = "pt5-gui"
+version = "0.1.0"
+description = "GUI for using the PT5-related utilities"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["pt5-core"]
