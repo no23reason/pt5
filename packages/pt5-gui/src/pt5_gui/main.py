@@ -46,7 +46,8 @@ class App:
         self.target_filename.set(target_filename)
         with open(self.source_filename.get()) as src:
             self.parsed = NcpFile.parse(src)
-        self.turtle.reset()
+
+        self.draw()
 
     def convert(self) -> None:
         converted = ncp_to_pt5(self.parsed)
@@ -56,20 +57,22 @@ class App:
     def draw(self) -> None:
         is_absolute = True
 
+        # do the scaling manually, using world coordinates makes the turtle behave super weird and unpredictable
+        scaling = 15
+
         self.turtle.reset()
         self.turtle.radians()
-        self.turtle_screen.setworldcoordinates(-15, -15, 15, 15)
 
         for command in self.parsed.commands:
-            last_x = self.turtle.xcor()
-            last_y = self.turtle.ycor()
+            last_x = self.turtle.xcor() / scaling
+            last_y = self.turtle.ycor() / scaling
 
             if command.type == NcpCommandType.MOVE:
                 if is_absolute:
                     new_x = command.arguments.get("X", last_x)
                     new_y = command.arguments.get("Y", last_y)
 
-                    self.turtle.goto(new_x, new_y)
+                    self.turtle.goto(new_x * scaling, new_y * scaling)
                 # TODO relative
             elif (
                 command.type == NcpCommandType.CLOCKWISE_CIRCLE
@@ -113,35 +116,27 @@ class App:
                         radius = -radius
 
                     # now decide whether to use alpha or tau - alpha
-                    # first, figure out the heading to the target
-                    delta_x = new_x - last_x
-                    delta_y = new_y - last_y
-
-                    if delta_x != 0:
-                        heading_to_target = math.atan(delta_y / delta_x)
-                    else:
-                        if delta_y < 0:
-                            heading_to_target = 3 * _HALF_PI
-                        else:
-                            heading_to_target = _HALF_PI
+                    # figure out the angles from center to start and end points
+                    angle_from_center_to_start = math.atan2(last_y - center_y, last_x - center_x) % math.tau
+                    angle_from_center_to_end = math.atan2(new_y - center_y, new_x - center_x) % math.tau
 
                     if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
-                        if heading_to_center > heading_to_target:
+                        if angle_from_center_to_start < angle_from_center_to_end:
                             extent = math.tau - alpha
                         else:
                             extent = alpha
                     else:
-                        if heading_to_center > heading_to_target:
-                            extent = alpha
-                        else:
+                        if angle_from_center_to_start > angle_from_center_to_end:
                             extent = math.tau - alpha
+                        else:
+                            extent = alpha
 
-                    self.turtle.teleport(center_x, center_y)
-                    self.turtle.dot()
-                    self.turtle.teleport(last_x, last_y)
+                    self.turtle.teleport(center_x * scaling, center_y * scaling)
+                    self.turtle.dot(size=3)
+                    self.turtle.teleport(last_x * scaling, last_y * scaling)
 
                     self.turtle.setheading(adjusted_heading)
-                    self.turtle.circle(radius=radius, extent=extent, steps=math.ceil(extent * 20 / math.tau))
+                    self.turtle.circle(radius=radius * scaling, extent=extent)
 
                 # TODO relative
 
