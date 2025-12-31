@@ -156,10 +156,15 @@ class App:
                 if is_absolute:
                     new_x = command.arguments.get("X", last_x)
                     new_y = command.arguments.get("Y", last_y)
+                else:
+                    delta_x = command.arguments.get("X", 0)
+                    delta_y = command.arguments.get("Y", 0)
 
-                    (scaled_x, scaled_y) = _scale_coordinates((new_x, new_y))
-                    self.turtle.goto(scaled_x, scaled_y)
-                # TODO relative
+                    new_x = _safe_add(last_x, delta_x)
+                    new_y = _safe_add(last_y, delta_y)
+
+                (scaled_x, scaled_y) = _scale_coordinates((new_x, new_y))
+                self.turtle.goto(scaled_x, scaled_y)
             elif (
                 command.type == NcpCommandType.CLOCKWISE_CIRCLE
                 or command.type == NcpCommandType.COUNTER_CLOCKWISE_CIRCLE
@@ -167,63 +172,71 @@ class App:
                 if is_absolute:
                     new_x = command.arguments.get("X", last_x)
                     new_y = command.arguments.get("Y", last_y)
+                else:
+                    delta_x = command.arguments.get("X", 0)
+                    delta_y = command.arguments.get("Y", 0)
 
-                    i = command.arguments.get("I", 0)
-                    j = command.arguments.get("J", 0)
+                    new_x = _safe_add(last_x, delta_x)
+                    new_y = _safe_add(last_y, delta_y)
 
-                    center_x = last_x + i
-                    center_y = last_y + j
+                i = command.arguments.get("I", 0)
+                j = command.arguments.get("J", 0)
 
-                    radius = math.hypot(i, j)
-                    center_to_new = math.hypot(new_x - i - last_x, new_y - j - last_y)
-                    last_to_new = math.hypot(new_x - last_x, new_y - last_y)
+                center_x = last_x + i
+                center_y = last_y + j
 
-                    # use the law of cosines to figure out the angle of the arc
-                    alpha = math.acos((radius**2 + center_to_new**2 - last_to_new**2) / (2 * radius * center_to_new))
+                radius = math.hypot(i, j)
+                center_to_new = math.hypot(new_x - i - last_x, new_y - j - last_y)
+                last_to_new = math.hypot(new_x - last_x, new_y - last_y)
 
-                    # figure out the heading from the turtle to the center
-                    heading_to_center = math.atan2(j, i)
+                # use the law of cosines to figure out the angle of the arc
+                alpha = math.acos((radius**2 + center_to_new**2 - last_to_new**2) / (2 * radius * center_to_new))
 
-                    # turn the turtle so that it has the center to its appropriate side
-                    adjusted_heading = (
-                        heading_to_center + math.pi / 2
-                        if command.type == NcpCommandType.CLOCKWISE_CIRCLE
-                        else heading_to_center - math.pi / 2
-                    ) % math.tau
+                # figure out the heading from the turtle to the center
+                heading_to_center = math.atan2(j, i)
 
-                    # set negative radius to make the turtle go clockwise if needed
-                    if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
-                        radius = -radius
+                # turn the turtle so that it has the center to its appropriate side
+                adjusted_heading = (
+                    heading_to_center + math.pi / 2
+                    if command.type == NcpCommandType.CLOCKWISE_CIRCLE
+                    else heading_to_center - math.pi / 2
+                ) % math.tau
 
-                    # now decide whether to use alpha or tau - alpha
-                    # figure out the angles from center to start and end points
-                    angle_from_center_to_start = math.atan2(last_y - center_y, last_x - center_x) % math.tau
-                    angle_from_center_to_end = math.atan2(new_y - center_y, new_x - center_x) % math.tau
+                # set negative radius to make the turtle go clockwise if needed
+                if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
+                    radius = -radius
 
-                    if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
-                        # if going the short way gets us to the target, use the short path
-                        # for clockwise circles, the angle is decreasing, hence the minus alpha
-                        if math.isclose((angle_from_center_to_start - alpha) % math.tau, angle_from_center_to_end):
-                            extent = alpha
-                        else:
-                            extent = math.tau - alpha
+                # now decide whether to use alpha or tau - alpha
+                # figure out the angles from center to start and end points
+                angle_from_center_to_start = math.atan2(last_y - center_y, last_x - center_x) % math.tau
+                angle_from_center_to_end = math.atan2(new_y - center_y, new_x - center_x) % math.tau
+
+                if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
+                    # if going the short way gets us to the target, use the short path
+                    # for clockwise circles, the angle is decreasing, hence the minus alpha
+                    if math.isclose((angle_from_center_to_start - alpha) % math.tau, angle_from_center_to_end):
+                        extent = alpha
                     else:
-                        if math.isclose((angle_from_center_to_start + alpha) % math.tau, angle_from_center_to_end):
-                            extent = alpha
-                        else:
-                            extent = math.tau - alpha
+                        extent = math.tau - alpha
+                else:
+                    if math.isclose((angle_from_center_to_start + alpha) % math.tau, angle_from_center_to_end):
+                        extent = alpha
+                    else:
+                        extent = math.tau - alpha
 
-                    if self.should_show_circle_centers.get():
-                        (scaled_x, scaled_y) = _scale_coordinates((center_x, center_y))
-                        self.turtle.teleport(scaled_x, scaled_y)
-                        self.turtle.dot(size=3)
-                        (scaled_x, scaled_y) = _scale_coordinates((last_x, last_y))
-                        self.turtle.teleport(scaled_x, scaled_y)
+                if self.should_show_circle_centers.get():
+                    (scaled_x, scaled_y) = _scale_coordinates((center_x, center_y))
+                    self.turtle.teleport(scaled_x, scaled_y)
+                    self.turtle.dot(size=3)
+                    (scaled_x, scaled_y) = _scale_coordinates((last_x, last_y))
+                    self.turtle.teleport(scaled_x, scaled_y)
 
-                    self.turtle.setheading(adjusted_heading)
-                    self.turtle.circle(radius=_scale_length(radius), extent=extent)
-
-                # TODO relative
+                self.turtle.setheading(adjusted_heading)
+                self.turtle.circle(radius=_scale_length(radius), extent=extent)
+            elif command.type == NcpCommandType.SET_INCREMENTAL_MODE:
+                is_absolute = False
+            elif command.type == NcpCommandType.SET_ABSOLUTE_MODE:
+                is_absolute = True
 
 
 root = tkinter.Tk()
