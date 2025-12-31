@@ -58,7 +58,7 @@ class App:
         is_absolute = True
 
         # do the scaling manually, using world coordinates makes the turtle behave super weird and unpredictable
-        scaling = 15
+        scaling = 30
 
         self.turtle.reset()
         self.turtle.radians()
@@ -96,20 +96,14 @@ class App:
                     alpha = math.acos((radius**2 + center_to_new**2 - last_to_new**2) / (2 * radius * center_to_new))
 
                     # figure out the heading from the turtle to the center
-                    if i != 0:
-                        heading_to_center = math.atan(j / i)
-                    else:
-                        if j < 0:
-                            heading_to_center = 3 * _HALF_PI
-                        else:
-                            heading_to_center = _HALF_PI
+                    heading_to_center = math.atan2(j, i)
 
                     # turn the turtle so that it has the center to its appropriate side
                     adjusted_heading = (
                         heading_to_center + _HALF_PI
                         if command.type == NcpCommandType.CLOCKWISE_CIRCLE
                         else heading_to_center - _HALF_PI
-                    )
+                    ) % math.tau
 
                     # set negative radius to make the turtle go clockwise if needed
                     if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
@@ -121,15 +115,17 @@ class App:
                     angle_from_center_to_end = math.atan2(new_y - center_y, new_x - center_x) % math.tau
 
                     if command.type == NcpCommandType.CLOCKWISE_CIRCLE:
-                        if angle_from_center_to_start < angle_from_center_to_end:
-                            extent = math.tau - alpha
-                        else:
+                        # if going the short way gets us to the target, use the short path
+                        # for clockwise circles, the angle is decreasing, hence the minus alpha
+                        if math.isclose((angle_from_center_to_start - alpha) % math.tau, angle_from_center_to_end):
                             extent = alpha
+                        else:
+                            extent = math.tau - alpha
                     else:
-                        if angle_from_center_to_start > angle_from_center_to_end:
-                            extent = math.tau - alpha
-                        else:
+                        if math.isclose((angle_from_center_to_start + alpha) % math.tau, angle_from_center_to_end):
                             extent = alpha
+                        else:
+                            extent = math.tau - alpha
 
                     self.turtle.teleport(center_x * scaling, center_y * scaling)
                     self.turtle.dot(size=3)
