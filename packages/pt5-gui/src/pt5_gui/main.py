@@ -7,8 +7,6 @@ from tkinter import ttk
 from pt5_core.ncp_model import NcpCommandType, NcpFile
 from pt5_core.ncp_to_pt5 import ncp_to_pt5
 
-_HALF_PI = math.pi / 2
-
 
 class App:
     def __init__(self, master: tkinter.Tk):
@@ -17,6 +15,8 @@ class App:
 
         self.source_filename = tkinter.StringVar()
         self.target_filename = tkinter.StringVar()
+        self.should_animate = tkinter.BooleanVar()
+        self.should_show_circle_centers = tkinter.BooleanVar()
         self.parsed: NcpFile | None = None
 
         frm = ttk.Frame(master, padding=10, width=800, height=600)
@@ -28,13 +28,16 @@ class App:
         ttk.Label(frm, text="Target file").grid(column=0, row=1)
         ttk.Label(frm, textvariable=self.target_filename).grid(column=1, row=1, columnspan=3)
 
-        ttk.Button(frm, text="Select source file", command=self.open_ncp_file).grid(column=0, row=2)
-        ttk.Button(frm, text="Convert", command=self.convert).grid(column=1, row=2)
-        ttk.Button(frm, text="Draw", command=self.draw).grid(column=2, row=2)
-        ttk.Button(frm, text="Quit", command=master.destroy).grid(column=3, row=2)
+        ttk.Checkbutton(frm, text="Animate", variable=self.should_animate).grid(column=0, row=2)
+        ttk.Checkbutton(frm, text="Show circle centers", variable=self.should_show_circle_centers).grid(column=1, row=2)
+
+        ttk.Button(frm, text="Select source file", command=self.open_ncp_file).grid(column=0, row=3)
+        ttk.Button(frm, text="Convert", command=self.convert).grid(column=1, row=3)
+        ttk.Button(frm, text="Draw", command=self.draw).grid(column=2, row=3)
+        ttk.Button(frm, text="Quit", command=master.destroy).grid(column=3, row=3)
 
         self.canvas = tkinter.Canvas(self.master, height=800, width=800)
-        self.canvas.grid(row=3, columnspan=3)
+        self.canvas.grid(column=0, row=4, columnspan=4)
 
         self.turtle_screen = turtle.TurtleScreen(self.canvas)
         self.turtle = turtle.RawTurtle(self.turtle_screen, shape="blank")
@@ -62,6 +65,11 @@ class App:
 
         self.turtle.reset()
         self.turtle.radians()
+
+        if self.should_animate.get():
+            self.turtle.speed(10)
+        else:
+            self.turtle.speed(0)
 
         for command in self.parsed.commands:
             last_x = self.turtle.xcor() / scaling
@@ -100,9 +108,9 @@ class App:
 
                     # turn the turtle so that it has the center to its appropriate side
                     adjusted_heading = (
-                        heading_to_center + _HALF_PI
+                        heading_to_center + math.pi / 2
                         if command.type == NcpCommandType.CLOCKWISE_CIRCLE
-                        else heading_to_center - _HALF_PI
+                        else heading_to_center - math.pi / 2
                     ) % math.tau
 
                     # set negative radius to make the turtle go clockwise if needed
@@ -127,9 +135,10 @@ class App:
                         else:
                             extent = math.tau - alpha
 
-                    self.turtle.teleport(center_x * scaling, center_y * scaling)
-                    self.turtle.dot(size=3)
-                    self.turtle.teleport(last_x * scaling, last_y * scaling)
+                    if self.should_show_circle_centers.get():
+                        self.turtle.teleport(center_x * scaling, center_y * scaling)
+                        self.turtle.dot(size=3)
+                        self.turtle.teleport(last_x * scaling, last_y * scaling)
 
                     self.turtle.setheading(adjusted_heading)
                     self.turtle.circle(radius=radius * scaling, extent=extent)
