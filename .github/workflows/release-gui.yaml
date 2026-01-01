@@ -26,7 +26,7 @@ jobs:
         run: sudo apt-get install -y gettext
       - name: Install gettext (Windows)
         if: matrix.os == 'windows-latest'
-        run: winget install --id=mlocati.GetText -e
+        run: winget -e --scope machine mlocati.GetText --accept-package-agreements --accept-source-agreements --source winget
       - name: Make dev
         run: make dev
       - name: Make build
