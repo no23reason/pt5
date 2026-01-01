@@ -8,6 +8,10 @@ dev:
 		$(MAKE) -C $${PKG} dev || exit $$?; \
 	done
 
+.PHONY: build
+build:
+	$(MAKE) -C packages/pt5-gui build
+
 .PHONY: test
 test:
 	for PKG in ${PACKAGE_DIRS}; do \
