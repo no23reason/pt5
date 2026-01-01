@@ -5,13 +5,14 @@ PACKAGE_DIRS = packages/pt5-core packages/pt5-gui
 .PHONY: dev
 dev:
 	uv sync --all-groups
-	for PKG in ${PACKAGE_DIRS}; do \
-		$(MAKE) -C $${PKG} dev || exit $$?; \
-	done
 
 .PHONY: build
 build:
 	$(MAKE) -C packages/pt5-gui build
+
+.PHONY: compile-messages
+compile-messages:
+	$(MAKE) -C packages/pt5-gui compile-messages
 
 .PHONY: test
 test:

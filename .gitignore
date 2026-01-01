@@ -15,6 +15,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.mo
+# Do not ignore mo files for now: they are a pain to generate on Windows on CI, it is easier to just commit the for now.
+#*.mo
 build/
 dist/

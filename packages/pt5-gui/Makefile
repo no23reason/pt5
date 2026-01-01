@@ -1,8 +1,5 @@
 SHELL := /bin/bash
 
-.PHONY: dev
-dev: compile-messages
-
 .PHONY: test
 test:
 	echo "no tests yet"
