@@ -1,5 +1,8 @@
 SHELL := /bin/bash
 
+.PHONY: dev
+dev: ;
+
 .PHONY: test
 test:
 	uv run pytest
