@@ -1,4 +1,6 @@
+import gettext
 import math
+import tkinter
 import tkinter.filedialog
 import turtle
 from pathlib import Path
@@ -6,6 +8,13 @@ from tkinter import ttk
 
 from pt5_core.ncp_model import NcpCommandType, NcpFile
 from pt5_core.ncp_to_pt5 import ncp_to_pt5
+
+appname = "pt5"
+locales_dir = Path(__file__).parent / "locales"
+
+# Initialize translation
+translations = gettext.translation(appname, str(locales_dir), fallback=False)
+translations.install()
 
 
 def _safe_add(a: float, b: float) -> float:
