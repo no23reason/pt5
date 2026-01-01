@@ -1,4 +1,5 @@
 import gettext
+import locale
 import math
 import os
 import sys
@@ -27,8 +28,32 @@ def resource_path(relative_path):
 appname = "pt5"
 locales_dir = resource_path(path.join("locales", "bundles"))
 
-# Initialize translation
-translations = gettext.translation(appname, str(locales_dir), fallback=False)
+# Fun times with Windows and its locales: there the locale of locale.getlocale()
+# is the locale to use when formatting data, not the display language.
+# To make it even worse, it does not return things like cs_CZ, but stuff like Czech_Czechia
+# which is annoying to say the least.
+# Instead, we have to use the syscall to get the actual language.
+if os.name == "nt":
+    try:
+        import ctypes
+
+        windll = ctypes.windll.kernel32
+        current_locale = locale.windows_locale[windll.GetUserDefaultUILanguage()]
+    except Exception:
+        current_locale = locale.getlocale()[0]
+
+    # Separate out only the language part as we do not have culture-specific localizations.
+    if current_locale:
+        current_locale = current_locale.split("_", maxsplit=1)[0]
+    else:
+        current_locale = "en"
+else:
+    # On other operating systems, let the built-in mechanism take over so stuff like LANG env vars works.
+    current_locale = None
+
+translations = gettext.translation(
+    appname, str(locales_dir), fallback=True, languages=[current_locale] if current_locale else None
+)
 translations.install()
 
 
