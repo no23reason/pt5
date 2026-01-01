@@ -57,4 +57,4 @@ jobs:
           prerelease: false
           make_latest: true
           files: |
-            dist/**/*.*
+            main/*
