@@ -1,16 +1,31 @@
 import gettext
 import math
+import os
+import sys
 import tkinter
 import tkinter.filedialog
 import turtle
+from os import path
 from pathlib import Path
 from tkinter import ttk
 
 from pt5_core.ncp_model import NcpCommandType, NcpFile
 from pt5_core.ncp_to_pt5 import ncp_to_pt5
 
+
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(path.abspath(path.dirname(__file__)))
+
+    return os.path.join(base_path, relative_path)
+
+
 appname = "pt5"
-locales_dir = Path(__file__).parent / "locales"
+locales_dir = resource_path(path.join("locales", "bundles"))
 
 # Initialize translation
 translations = gettext.translation(appname, str(locales_dir), fallback=False)
@@ -38,19 +53,21 @@ class App:
         frm = ttk.Frame(master, padding=10, width=800, height=1000)
         frm.grid()
 
-        ttk.Label(frm, text="Source file").grid(column=0, row=0)
+        ttk.Label(frm, text=_("Source file")).grid(column=0, row=0)
         ttk.Label(frm, textvariable=self.source_filename).grid(column=1, row=0, columnspan=3)
 
-        ttk.Label(frm, text="Target file").grid(column=0, row=1)
+        ttk.Label(frm, text=_("Target file")).grid(column=0, row=1)
         ttk.Label(frm, textvariable=self.target_filename).grid(column=1, row=1, columnspan=3)
 
-        ttk.Checkbutton(frm, text="Animate", variable=self.should_animate).grid(column=0, row=2)
-        ttk.Checkbutton(frm, text="Show circle centers", variable=self.should_show_circle_centers).grid(column=1, row=2)
+        ttk.Checkbutton(frm, text=_("Animate"), variable=self.should_animate).grid(column=0, row=2)
+        ttk.Checkbutton(frm, text=_("Show circle centers"), variable=self.should_show_circle_centers).grid(
+            column=1, row=2
+        )
 
-        ttk.Button(frm, text="Select source file", command=self.open_ncp_file).grid(column=0, row=3)
-        ttk.Button(frm, text="Convert", command=self.convert).grid(column=1, row=3)
-        ttk.Button(frm, text="Draw", command=self.draw).grid(column=2, row=3)
-        ttk.Button(frm, text="Quit", command=master.destroy).grid(column=3, row=3)
+        ttk.Button(frm, text=_("Select source file"), command=self.open_ncp_file).grid(column=0, row=3)
+        ttk.Button(frm, text=_("Convert"), command=self.convert).grid(column=1, row=3)
+        ttk.Button(frm, text=_("Draw"), command=self.draw).grid(column=2, row=3)
+        ttk.Button(frm, text=_("Quit"), command=master.destroy).grid(column=3, row=3)
 
         self.canvas = tkinter.Canvas(self.master, height=self.canvas_size, width=self.canvas_size)
         self.canvas.grid(column=0, row=4, columnspan=4)
@@ -248,6 +265,7 @@ class App:
                 is_absolute = True
 
 
-root = tkinter.Tk()
-app = App(root)
-root.mainloop()
+if __name__ == "__main__":
+    root = tkinter.Tk()
+    app = App(root)
+    root.mainloop()
