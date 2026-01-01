@@ -2,6 +2,12 @@ SHELL := /bin/bash
 
 PACKAGE_DIRS = packages/pt5-core packages/pt5-gui
 
+.PHONY: dev
+dev:
+	for PKG in ${PACKAGE_DIRS}; do \
+		$(MAKE) -C $${PKG} dev || exit $$?; \
+	done
+
 .PHONY: test
 test:
 	for PKG in ${PACKAGE_DIRS}; do \
